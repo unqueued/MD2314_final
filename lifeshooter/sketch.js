@@ -7,7 +7,7 @@ var
     NUM_OF_HEARTS = 3,
     
     stars = [],
-    NUM_OF_STARS = 20,
+    NUM_OF_STARS = 40,
     score = 0;
     
 
@@ -16,10 +16,13 @@ function setup() {
   
   // Initialize onscreen entities
   for(var i = 0; i < NUM_OF_STARS; i++) {
+    /*
     stars.push({
       x: Math.random() * WIDTH,
       y: Math.random() * HEIGHT
     });
+    */
+    stars.push(new Star);
   }
   
   frameRate(FPS);
@@ -33,9 +36,10 @@ function draw() {
   // Draw stars
   // There is much debate about best practices for iteration in js...
   for(var i = 0; i < NUM_OF_STARS; i++) {
-    fill(255, 255, 255);
-    noStroke();
-    ellipse(stars[i].x, stars[i].y, 10, 10);
+    stars[i].display();
+    //fill(255, 255, 255);
+    //noStroke();
+    //ellipse(stars[i].x, stars[i].y, 10, 10);
   }
   
   update();
@@ -47,11 +51,14 @@ function update() {
   //console.log("Updating...");
   //console.log("Star: " + stars[2].x);
   for(var i = 0; i < NUM_OF_STARS; i++) {
+    /*
     stars[i].y++;
     if(stars[i].y > HEIGHT) {
       stars[i].y = 0;
       stars[i].x = Math.random() * WIDTH;
     }
+    */
+    stars[i].move();
   }
 }
 
@@ -71,4 +78,26 @@ function windowResized() {
     WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
     resizeCanvas(WIDTH, HEIGHT);
+}
+
+// Star class
+function Star() {
+  this.x = Math.random() * WIDTH;
+  this.y = Math.random() * HEIGHT;
+  this.speed = 1;
+  this.diameter = 4;
+  
+  this.move = function() {
+    this.y++;
+    if(this.y > HEIGHT) {
+      this.y = 0;
+      this.x = Math.random() * WIDTH;
+    }
+  }
+  
+  this.display = function() {
+    fill(255, 255, 255);
+    noStroke();
+    ellipse(this.x, this.y, this.diameter, this.diameter);
+  }
 }
