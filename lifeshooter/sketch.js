@@ -8,8 +8,19 @@ var
     
     stars = [],
     NUM_OF_STARS = 40,
-    score = 0;
+    score = 0,
+    tmpHeartImage = null,
+    tmpBrokenHeartImage = null;
     
+function preload() {
+  //tmpHeartImage = loadImage("lifeshooter/images/Heart.svg");
+  
+  tmpHeartImage = loadImage("images/Heart.svg", 
+  function() {console.log("succeeded in loading");},
+  function(e) {console.log("Failed to load because: "+e); } );
+  //console.log("Loaded :" + tmpHeartImage);
+  
+}
 
 function setup() {
   createCanvas(WIDTH, HEIGHT);
@@ -24,6 +35,8 @@ function setup() {
     */
     stars.push(new Star);
   }
+  
+  imageMode(CENTER);
   
   frameRate(FPS);
   loop();
@@ -41,6 +54,8 @@ function draw() {
     //noStroke();
     //ellipse(stars[i].x, stars[i].y, 10, 10);
   }
+  
+  image(tmpHeartImage, 50, 50, 80, 80);
   
   update();
 }
