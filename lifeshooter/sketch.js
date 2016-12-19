@@ -1,6 +1,5 @@
 var
-    //WIDTH = 600,
-    //HEIGHT = 600,
+
     WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
     FPS = 60; // Frames per second
@@ -13,20 +12,25 @@ var
     
 
 function setup() {
-  createCanvas(800, 600);
-  console.log("Created canvas");
-  //createCanvas(WIDTH, HEIGHT);
+  createCanvas(WIDTH, HEIGHT);
   frameRate(FPS);
   loop();
 }
 
 function draw() {
   background(0, 0, 0);
-  //console.log(frameCount);
+  
+  
+  
+  update();
 }
 
 function windowResized() {
     WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
     resizeCanvas(WIDTH, HEIGHT);
+}
+
+function update() {
+  
 }
