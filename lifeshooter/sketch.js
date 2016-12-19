@@ -13,11 +13,13 @@ var
     NUM_OF_HEARTS = 20,
     
     stars = [],
-    NUM_OF_STARS = 40,
+    NUM_OF_STARS = 90,
     score = 0,
     brokenHeartScore = 0,
     tmpHeartImage = null,
-    tmpBrokenHeartImage = null;
+    tmpBrokenHeartImage = null,
+    missedHearts = 0,
+    endingState = false;
     
 function preload() {
   //tmpHeartImage = loadImage("lifeshooter/images/Heart.svg");
@@ -39,12 +41,19 @@ function setup() {
   
   // Initialize onscreen entities
   for(var i = 0; i < NUM_OF_STARS; i++) {
-    stars.push(new Star);
+    stars.push(new Star());
+    if(i < 30) {
+      stars[i].color = 100;
+      stars[i].speed = 1;
+    }
+    else if(i < 60) {
+      stars[i].color = 150;
+      stars[i].speed = 2;
+    }
   }
   for(var i = 0; i < NUM_OF_HEARTS; i++) {
-    hearts.push(new Heart);
+    hearts.push(new Heart());
   }
-  
   
   
   imageMode(CENTER);
@@ -61,6 +70,8 @@ function draw() {
   // Draw stars
   for(var i = 0; i < NUM_OF_STARS; i++) {
     stars[i].display();
+    // THere's a much more ellegant way to do this... but just gonna do it static
+    
   }
   // Draw hearts
   for(var i = 0; i < NUM_OF_HEARTS; i++) {
@@ -92,9 +103,17 @@ function drawScore() {
   //text("High score: " + score, 20, 30);
   text("Score:", 20, 30);
   image(tmpHeartImage, 38, 55, 40, 40);
-  text(" X " + score, 55, 65);
+  text(" X " + missedHearts, 55, 65);
   image(tmpBrokenHeartImage, 38, 95, 35, 35);
   text(" X " + brokenHeartScore, 55, 105);
+}
+
+function startEndingState() {
+  endingState = true;
+  for(var i = 0; i < NUM_OF_HEARTS; i++) {
+    hearts[i].fading = true;
+    hearts[i].alive = false;
+  }
 }
 
 function mouseMoved() {
@@ -103,6 +122,12 @@ function mouseMoved() {
 
 function mouseDragged() {
 
+}
+
+function keyPressed() {
+  if(keyCode === ENTER) {
+    startEndingState();
+  }
 }
 
 function mousePressed() {
@@ -129,12 +154,12 @@ function windowResized() {
 function Star() {
   this.x = Math.random() * WIDTH;
   this.y = Math.random() * HEIGHT;
-  this.speed = 1;
+  this.speed = 3;
   this.diameter = 4;
   this.color = 255;
   
   this.move = function() {
-    this.y++;
+    this.y+=this.speed;
     if(this.y > HEIGHT) {
       this.y = 0;
       this.x = Math.random() * WIDTH;
@@ -166,6 +191,7 @@ function Heart() {
   this.chaseme = false;
   this.fading = false;
   this.myTint = 255;
+  this.layer = 0;
   
   minBeatSize = 7;
   this.currentSize = this.size;
@@ -174,12 +200,7 @@ function Heart() {
   //console.log("Initialized heart with size: " + this.size);
   
   this.move = function() {
-    this.y++;
-    if(this.y > HEIGHT) {
-      this.y = 0;
-      this.x = Math.random() * WIDTH;
-      this.size = 30 - Math.random() * 10;
-    }
+    this.y += this.speed;
     
     if(this.fading) {
       return;
@@ -187,6 +208,21 @@ function Heart() {
     
     if(this.broken) {
       return;
+    }
+    
+    if(!this.alive) {
+      return;
+    }
+    
+    if(this.y > HEIGHT) {
+      missedHearts++;
+      this.alive = false;
+      if(missedHearts > 8) {
+        startEndingState();
+      }
+      //this.y = 0;
+      //this.x = Math.random() * WIDTH;
+      //this.size = 30 - Math.random() * 10;
     }
     
     // Just want it to iterate size change once every 1/4th second
@@ -214,6 +250,10 @@ function Heart() {
   }
   
   this.display = function() {
+    if(this.myTint < 10) {
+      return;
+    }
+    
     if(this.fading) {
       if(this.myTint > 1) {
         this.myTint--;
@@ -254,6 +294,9 @@ function Heart() {
       this.currentSize = this.size;
       this.fading = true;
       brokenHeartScore++;
+      if(brokenHeartScore > 8) {
+        startEndingState();
+      }
     }
     if(outcome == 1) {
       
